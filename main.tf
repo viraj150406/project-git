@@ -34,6 +34,7 @@ resource "aws_security_group" "k8s" {
   vpc_id     = data.aws_vpc.default.id
 
   ingress {
+    description = "SSH"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
@@ -41,6 +42,7 @@ resource "aws_security_group" "k8s" {
   }
 
   ingress {
+    description = "Kubernetes API"
     from_port   = 6443
     to_port     = 6443
     protocol    = "tcp"
@@ -48,6 +50,7 @@ resource "aws_security_group" "k8s" {
   }
 
   ingress {
+    description = "Kubelet"
     from_port   = 10250
     to_port     = 10250
     protocol    = "tcp"
@@ -55,6 +58,7 @@ resource "aws_security_group" "k8s" {
   }
 
   ingress {
+    description = "NodePort"
     from_port   = 30000
     to_port     = 32767
     protocol    = "tcp"
@@ -62,6 +66,7 @@ resource "aws_security_group" "k8s" {
   }
 
   ingress {
+    description = "Internal node communication"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -78,10 +83,10 @@ resource "aws_security_group" "k8s" {
 
 resource "aws_instance" "master" {
   ami                    = data.aws_ami.ubuntu.id
-  instance_type           = "t3.medium"
-  key_name               = "viraj"
-  subnet_id               = data.aws_subnets.default.ids[0]
-  vpc_security_group_ids  = [aws_security_group.k8s.id]
+  instance_type            = "t3.micro"
+  key_name                = "viraj"
+  subnet_id                = data.aws_subnets.default.ids[0]
+  vpc_security_group_ids   = [aws_security_group.k8s.id]
 
   tags = {
     Name = "K8s-Master"
@@ -91,7 +96,7 @@ resource "aws_instance" "master" {
 resource "aws_instance" "worker" {
   count                  = 2
   ami                   = data.aws_ami.ubuntu.id
-  instance_type          = "t3.medium"
+  instance_type          = "t3.micro"
   key_name              = "viraj"
   subnet_id              = data.aws_subnets.default.ids[0]
   vpc_security_group_ids = [aws_security_group.k8s.id]
